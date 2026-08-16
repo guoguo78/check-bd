@@ -1,0 +1,37 @@
+name: 招标信息定时检索
+
+on:
+  schedule:
+    # 新版写法：直接指定北京时间
+    - cron: '0 10 * * *'
+      timezone: "Asia/Shanghai"
+    # 如果你的 GitHub Actions 不支持 timezone，改用 UTC 写法：
+    # - cron: '0 2 * * *'
+  workflow_dispatch:  # 允许在 Actions 页面手动触发测试
+
+jobs:
+  check-bd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 仓库代码
+        uses: actions/checkout@v4
+
+      - name: 配置 Python 环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 安装依赖
+        run: pip install requests
+        run: python -m pip install beautifulsoup4
+        run: pip install requests beautifulsoup4 playwright 
+        run: pip install playwright 
+        run: playwright install chromium 
+
+
+      - name: 执行检索脚本
+        env:
+               DINGTALK_WEBHOOK: ${{ secrets.DINGTALK_WEBHOOK }}
+               DINGTALK_SECRET: ${{ secrets.DINGTALK_SECRET }}
+
+        run: python indexqianlima+biying.py
